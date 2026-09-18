@@ -72,7 +72,7 @@ export const MEAL_TYPES = {
 // ============================================================================
 
 export const AWS_CONFIG = {
-  REGION: process.env.NEXT_PUBLIC_AWS_REGION ?? "ap-south-1",
+  REGION: process.env.NEXT_PUBLIC_AWS_REGION ?? "eu-north-1",
   COGNITO_USER_POOL_ID: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID ?? "",
   COGNITO_CLIENT_ID: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID ?? "",
   API_GATEWAY_URL: process.env.NEXT_PUBLIC_API_GATEWAY_URL ?? "",
