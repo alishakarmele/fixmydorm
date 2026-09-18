@@ -1,16 +1,10 @@
 /**
  * FixMyDorm - Utility functions
  *
- * Shared helper functions used across the application.
+ * Includes shadcn/ui's cn() utility and custom helpers.
  */
 
-/**
- * Combines multiple class names, filtering out falsy values.
- * Lightweight alternative to `clsx` — can be swapped later if needed.
- */
-export function cn(...classes: (string | undefined | null | false)[]): string {
-  return classes.filter(Boolean).join(" ");
-}
+export { cn } from "cn";
 
 /**
  * Formats an ISO date string into a human-readable format.
