@@ -1,8 +1,11 @@
 /**
- * FixMyDorm - The Wall Page
+ * FixMyDorm - The Wall
  *
- * Anonymous grievance board where students post anonymously,
- * upvote issues, mark "Affected Too", and management can respond officially.
+ * Anonymous grievance board. Every post runs through:
+ *  - Amazon Bedrock (Claude) → sentiment analysis + content classification
+ *  - Amazon Rekognition → image moderation (if image attached)
+ *  - Amazon Translate → regional language translation for management view
+ *  - Trending score computed by Bedrock from upvotes + affected count + recency
  */
 
 "use client";
@@ -11,26 +14,13 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/auth/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { timeAgo } from "@/lib/utils";
 import {
-  Megaphone,
-  ThumbsUp,
-  Users,
-  MessageSquare,
-  Send,
-  Loader2,
-  Plus,
-  Building,
-  AlertCircle,
-  X,
+  Megaphone, ThumbsUp, Users, MessageSquare,
+  Send, Loader2, Plus, Building, AlertCircle, X,
+  TrendingUp, Shield, Brain, Sparkles,
 } from "lucide-react";
 
 interface WallPost {
@@ -40,9 +30,60 @@ interface WallPost {
   upvotes: number;
   affectedCount: number;
   officialResponse: string | null;
+  officialRespondedAt?: string | null;
   createdAt: string;
+  // AI fields
+  aiSentiment?: "positive" | "negative" | "neutral" | null;
+  aiTrendScore?: number | null;
+  aiModerationStatus?: "approved" | "flagged" | "pending" | null;
 }
 
+/* ─── AI Badge helpers ────────────────────────────────────────────────────── */
+function SentimentBadge({ sentiment }: { sentiment?: string | null }) {
+  if (!sentiment) return null;
+  const map = {
+    positive: { emoji: "😊", label: "Positive", cls: "bg-green-100 text-green-700 border-green-200" },
+    negative: { emoji: "😤", label: "Concern", cls: "bg-orange-100 text-orange-700 border-orange-200" },
+    neutral:  { emoji: "😐", label: "Neutral",  cls: "bg-muted text-muted-foreground border-border" },
+  };
+  const s = map[sentiment as keyof typeof map];
+  if (!s) return null;
+  return (
+    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold border ${s.cls}`}>
+      <Brain className="h-2.5 w-2.5" />
+      {s.emoji} Bedrock: {s.label}
+    </span>
+  );
+}
+
+function TrendBadge({ score }: { score?: number | null }) {
+  if (!score || score < 50) return null;
+  const hot = score >= 85;
+  return (
+    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-bold border ${
+      hot ? "bg-red-100 text-red-700 border-red-200" : "bg-amber-100 text-amber-700 border-amber-200"
+    }`}>
+      <TrendingUp className="h-2.5 w-2.5" />
+      {hot ? "🔥 Trending" : "📈 Rising"} {score}
+    </span>
+  );
+}
+
+function ModerationBadge({ status }: { status?: string | null }) {
+  if (!status || status === "pending") return null;
+  return (
+    <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold border ${
+      status === "approved"
+        ? "bg-green-50 text-green-600 border-green-200"
+        : "bg-red-50 text-red-600 border-red-200"
+    }`}>
+      <Shield className="h-2.5 w-2.5" />
+      Rekognition: {status === "approved" ? "✓ Safe" : "⚠ Flagged"}
+    </span>
+  );
+}
+
+/* ─── Main Page ───────────────────────────────────────────────────────────── */
 export default function WallPage() {
   const { role } = useAuth();
   const [posts, setPosts] = useState<WallPost[]>([]);
@@ -52,8 +93,6 @@ export default function WallPage() {
   const [newHostel, setNewHostel] = useState("");
   const [isPosting, setIsPosting] = useState(false);
   const [error, setError] = useState("");
-
-  // Response state for management
   const [respondingTo, setRespondingTo] = useState<string | null>(null);
   const [responseText, setResponseText] = useState("");
 
@@ -69,39 +108,25 @@ export default function WallPage() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchPosts();
-  }, [fetchPosts]);
+  useEffect(() => { fetchPosts(); }, [fetchPosts]);
 
   async function handlePost() {
     if (!newContent.trim()) return;
     setIsPosting(true);
     setError("");
-
     try {
       const res = await fetch("/api/wall", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: newContent.trim(),
-          hostelName: newHostel.trim() || undefined,
-        }),
+        body: JSON.stringify({ content: newContent.trim(), hostelName: newHostel.trim() || undefined }),
       });
-
       const data = await res.json();
       if (data.success) {
         setPosts((prev) => [data.data as WallPost, ...prev]);
-        setNewContent("");
-        setNewHostel("");
-        setShowForm(false);
-      } else {
-        setError(data.error);
-      }
-    } catch {
-      setError("Failed to post");
-    } finally {
-      setIsPosting(false);
-    }
+        setNewContent(""); setNewHostel(""); setShowForm(false);
+      } else { setError(data.error); }
+    } catch { setError("Failed to post"); }
+    finally { setIsPosting(false); }
   }
 
   async function handleAction(postId: string, action: "upvote" | "affected") {
@@ -112,14 +137,8 @@ export default function WallPage() {
         body: JSON.stringify({ action }),
       });
       const data = await res.json();
-      if (data.success) {
-        setPosts((prev) =>
-          prev.map((p) => (p.id === postId ? { ...p, ...data.data } : p))
-        );
-      }
-    } catch {
-      console.error("Action failed");
-    }
+      if (data.success) setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, ...data.data } : p)));
+    } catch { console.error("Action failed"); }
   }
 
   async function handleRespond(postId: string) {
@@ -132,25 +151,22 @@ export default function WallPage() {
       });
       const data = await res.json();
       if (data.success) {
-        setPosts((prev) =>
-          prev.map((p) => (p.id === postId ? { ...p, ...data.data } : p))
-        );
-        setRespondingTo(null);
-        setResponseText("");
+        setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, ...data.data } : p)));
+        setRespondingTo(null); setResponseText("");
       }
-    } catch {
-      console.error("Response failed");
-    }
+    } catch { console.error("Response failed"); }
   }
+
+  const trending = posts.filter((p) => (p.aiTrendScore ?? 0) >= 70).length;
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
-      {/* Header */}
+
+      {/* ── Header ─────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-            <Megaphone className="h-6 w-6" />
-            The Wall
+            <Megaphone className="h-6 w-6" /> The Wall
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
             Anonymous grievance board · Speak up, stay anonymous
@@ -164,14 +180,36 @@ export default function WallPage() {
         )}
       </div>
 
-      {/* New Post Form */}
+      {/* ── AI Power Banner ────────────────────────────────────────────── */}
+      <div className="flex flex-wrap gap-2 p-3 bg-primary/5 border border-primary/20 rounded-xl text-xs">
+        <span className="flex items-center gap-1 text-muted-foreground font-medium">
+          <Sparkles className="h-3 w-3 text-primary" /> AI-powered by AWS:
+        </span>
+        <span className="flex items-center gap-1 bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-semibold border border-orange-200">
+          <Brain className="h-3 w-3" /> Bedrock sentiment
+        </span>
+        <span className="flex items-center gap-1 bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-semibold border border-blue-200">
+          <Shield className="h-3 w-3" /> Rekognition moderation
+        </span>
+        <span className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold border border-green-200">
+          <TrendingUp className="h-3 w-3" /> Trend scoring
+        </span>
+        {trending > 0 && (
+          <span className="ml-auto text-red-600 font-bold">🔥 {trending} trending issues right now</span>
+        )}
+      </div>
+
+      {/* ── New Post Form ─────────────────────────────────────────────── */}
       {showForm && (
         <Card className="border-primary/20">
           <CardContent className="pt-4 space-y-3">
+            <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 p-2 rounded-lg">
+              <Brain className="h-3.5 w-3.5 mt-0.5 text-primary shrink-0" />
+              <span>Your post will be analysed by <strong>Amazon Bedrock</strong> for sentiment and <strong>Amazon Rekognition</strong> for content safety before going live.</span>
+            </div>
             {error && (
               <div className="flex items-center gap-2 text-sm text-destructive">
-                <AlertCircle className="h-4 w-4" />
-                {error}
+                <AlertCircle className="h-4 w-4" /> {error}
               </div>
             )}
             <textarea
@@ -201,7 +239,7 @@ export default function WallPage() {
         </Card>
       )}
 
-      {/* Posts */}
+      {/* ── Posts ─────────────────────────────────────────────────────── */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -210,18 +248,22 @@ export default function WallPage() {
         <div className="text-center py-16">
           <Megaphone className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
           <h3 className="font-semibold">The Wall is empty</h3>
-          <p className="text-muted-foreground text-sm mt-1">
-            Be the first to speak up anonymously.
-          </p>
+          <p className="text-muted-foreground text-sm mt-1">Be the first to speak up anonymously.</p>
         </div>
       ) : (
         <div className="space-y-4">
           {posts.map((post) => (
-            <Card key={post.id} className="transition-all hover:shadow-sm">
+            <Card
+              key={post.id}
+              className={`transition-all hover:shadow-sm ${
+                (post.aiTrendScore ?? 0) >= 85 ? "border-red-200 ring-1 ring-red-100" :
+                (post.aiTrendScore ?? 0) >= 70 ? "border-amber-200" : ""
+              }`}
+            >
               <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
+                <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center">
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0">
                       <span className="text-sm">🎭</span>
                     </div>
                     <div>
@@ -232,6 +274,12 @@ export default function WallPage() {
                       </p>
                     </div>
                   </div>
+                  {/* AI badges top-right */}
+                  <div className="flex flex-wrap gap-1 justify-end">
+                    <TrendBadge score={post.aiTrendScore} />
+                    <SentimentBadge sentiment={post.aiSentiment} />
+                    <ModerationBadge status={post.aiModerationStatus} />
+                  </div>
                 </div>
               </CardHeader>
 
@@ -240,18 +288,25 @@ export default function WallPage() {
 
                 {/* Official Response */}
                 {post.officialResponse && (
-                  <div className="mt-3 rounded-lg border bg-blue-50 dark:bg-blue-950/30 p-3">
-                    <p className="text-xs font-medium text-blue-700 dark:text-blue-400 flex items-center gap-1 mb-1">
+                  <div className="mt-3 rounded-lg border bg-primary/5 border-primary/20 p-3">
+                    <p className="text-xs font-semibold text-primary flex items-center gap-1 mb-1">
                       <MessageSquare className="h-3 w-3" />
                       Official Response
+                      {post.officialRespondedAt && (
+                        <span className="text-muted-foreground font-normal ml-1">· {timeAgo(post.officialRespondedAt)}</span>
+                      )}
                     </p>
-                    <p className="text-xs">{post.officialResponse}</p>
+                    <p className="text-xs text-foreground">{post.officialResponse}</p>
                   </div>
                 )}
 
-                {/* Management Response Form */}
+                {/* Mgmt Response Form */}
                 {role === "management" && respondingTo === post.id && (
                   <div className="mt-3 space-y-2">
+                    <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 p-2 rounded-lg">
+                      <Brain className="h-3 w-3 mt-0.5 text-primary shrink-0" />
+                      <span>Your response will be auto-translated into the student&apos;s language via <strong>Amazon Translate</strong>.</span>
+                    </div>
                     <textarea
                       placeholder="Write official response..."
                       value={responseText}
@@ -263,9 +318,7 @@ export default function WallPage() {
                       <Button size="sm" onClick={() => handleRespond(post.id)}>
                         <Send className="mr-1 h-3 w-3" /> Send
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => setRespondingTo(null)}>
-                        Cancel
-                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => setRespondingTo(null)}>Cancel</Button>
                     </div>
                   </div>
                 )}
@@ -273,37 +326,21 @@ export default function WallPage() {
 
               <Separator />
 
-              <CardFooter className="py-2 gap-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs gap-1"
-                  onClick={() => handleAction(post.id, "upvote")}
-                >
-                  <ThumbsUp className="h-3 w-3" />
-                  {post.upvotes}
+              <CardFooter className="py-2 gap-2 flex-wrap">
+                <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => handleAction(post.id, "upvote")}>
+                  <ThumbsUp className="h-3 w-3" /> {post.upvotes}
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 text-xs gap-1"
-                  onClick={() => handleAction(post.id, "affected")}
-                >
+                <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => handleAction(post.id, "affected")}>
                   <Users className="h-3 w-3" />
                   Affected Too {post.affectedCount > 0 && `(${post.affectedCount})`}
                 </Button>
                 {role === "management" && !post.officialResponse && (
                   <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 text-xs gap-1 ml-auto"
-                    onClick={() => {
-                      setRespondingTo(post.id);
-                      setResponseText("");
-                    }}
+                    variant="ghost" size="sm"
+                    className="h-7 text-xs gap-1 ml-auto text-primary"
+                    onClick={() => { setRespondingTo(post.id); setResponseText(""); }}
                   >
-                    <MessageSquare className="h-3 w-3" />
-                    Respond
+                    <MessageSquare className="h-3 w-3" /> Respond
                   </Button>
                 )}
               </CardFooter>

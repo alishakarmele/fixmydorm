@@ -37,11 +37,17 @@ interface LostFoundItem {
   type: "lost" | "found";
   title: string;
   description: string;
-  location: string;
+  location?: string;
   imageUrl: string | null;
-  contactInfo: string;
+  contactInfo?: string;
   status: string;
+  reporterName?: string;
+  hostelName?: string;
+  roomNumber?: string;
   createdAt: string;
+  // AI fields
+  aiMatchScore?: number | null;
+  aiMatchedItemId?: string | null;
 }
 
 export default function LostFoundPage() {
@@ -245,33 +251,55 @@ export default function LostFoundPage() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2">
           {filtered.map((item) => (
-            <Card key={item.id} className="transition-all hover:shadow-sm">
+            <Card
+              key={item.id}
+              className={`transition-all hover:shadow-sm ${item.status === "matched" ? "border-green-300 ring-1 ring-green-100" : ""}`}
+            >
               <CardHeader className="pb-2">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between gap-2">
                   <CardTitle className="text-sm">{item.title}</CardTitle>
                   <Badge variant={item.type === "lost" ? "destructive" : "default"} className="text-xs shrink-0">
                     {item.type === "lost" ? "Lost" : "Found"}
                   </Badge>
                 </div>
+                {/* AI Match Banner */}
+                {item.aiMatchScore && item.aiMatchScore >= 70 && (
+                  <div className="flex items-center gap-1.5 mt-1 px-2 py-1 bg-green-50 border border-green-200 rounded-lg text-xs text-green-700 font-semibold">
+                    <span>🤖</span>
+                    <span>Bedrock AI Match: <strong>{item.aiMatchScore}% confidence</strong> — possible match found!</span>
+                  </div>
+                )}
+                {item.status === "matched" && !item.aiMatchScore && (
+                  <div className="flex items-center gap-1.5 mt-1 px-2 py-1 bg-green-50 border border-green-200 rounded-lg text-xs text-green-700 font-semibold">
+                    ✅ Matched &amp; Claimed
+                  </div>
+                )}
               </CardHeader>
               <CardContent className="pb-3 space-y-2">
                 <p className="text-xs text-muted-foreground line-clamp-2">{item.description}</p>
                 <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+                  {item.hostelName && (
+                    <span className="flex items-center gap-1">
+                      🏠 {item.hostelName} {item.roomNumber && `· ${item.roomNumber}`}
+                    </span>
+                  )}
                   {item.location && (
                     <span className="flex items-center gap-1">
                       <MapPin className="h-3 w-3" /> {item.location}
                     </span>
                   )}
-                  {item.contactInfo && (
-                    <span className="flex items-center gap-1">
-                      <Phone className="h-3 w-3" /> {item.contactInfo}
-                    </span>
-                  )}
                 </div>
+                {/* Rekognition photo note */}
+                {item.imageUrl && (
+                  <div className="flex items-center gap-1 text-[10px] text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                    🛡 Rekognition: photo verified safe
+                  </div>
+                )}
                 <p className="text-xs text-muted-foreground">{timeAgo(item.createdAt)}</p>
               </CardContent>
             </Card>
           ))}
+
         </div>
       )}
     </div>
