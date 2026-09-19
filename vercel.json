@@ -1,0 +1,10 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "env": {
+    "NEXT_PUBLIC_AWS_REGION": "eu-north-1",
+    "NEXT_PUBLIC_COGNITO_USER_POOL_ID": "eu-north-1_sPi9jO5KX",
+    "NEXT_PUBLIC_COGNITO_CLIENT_ID": "7qo0g4i1r953v41dukjtob364s"
+  }
+}
