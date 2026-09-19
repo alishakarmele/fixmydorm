@@ -58,11 +58,11 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero */}
-      <section className="relative flex flex-col items-center justify-center min-h-[90vh] text-center px-4 overflow-hidden bg-[#0a0a0f]">
+      <section className="relative flex flex-col items-center justify-center min-h-[90vh] text-center px-4 overflow-hidden bg-[oklch(0.22_0.04_110)]">
         {/* Background blobs */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full bg-gradient-to-br from-violet-600/20 to-blue-600/10 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-blue-500/10 blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-purple-500/10 blur-[100px] pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full bg-gradient-to-br from-[oklch(0.7_0.1_128)]/25 to-[oklch(0.75_0.08_45)]/15 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-[oklch(0.75_0.08_45)]/20 blur-[100px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] rounded-full bg-[oklch(0.7_0.1_128)]/15 blur-[100px] pointer-events-none" />
 
         {/* Grid */}
         <div className="absolute inset-0 opacity-[0.025]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='white'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e\")" }} />
@@ -80,7 +80,7 @@ export default function Home() {
           {/* Heading */}
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
             Fix your dorm.<br />
-            <span className="bg-gradient-to-r from-violet-400 via-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[oklch(0.75_0.12_128)] via-[oklch(0.78_0.09_85)] to-[oklch(0.8_0.1_45)] bg-clip-text text-transparent">
               Effortlessly.
             </span>
           </h1>
@@ -96,7 +96,7 @@ export default function Home() {
               href="/auth/signup"
               className={buttonVariants({
                 size: "lg",
-                className: "h-12 px-8 text-base bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 border-0 text-white shadow-xl shadow-violet-500/20",
+                className: "h-12 px-8 text-base bg-gradient-to-r from-[oklch(0.46_0.095_128)] to-[oklch(0.55_0.08_100)] hover:from-[oklch(0.4_0.095_128)] hover:to-[oklch(0.48_0.08_100)] border-0 text-[oklch(0.97_0.01_100)] shadow-xl shadow-[oklch(0.46_0.095_128)]/25",
               })}
             >
               Get Started
@@ -158,8 +158,8 @@ export default function Home() {
       </section>
 
       {/* Bottom CTA */}
-      <section className="bg-[#0a0a0f] py-24 px-4 text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-t from-violet-950/30 to-transparent pointer-events-none" />
+      <section className="bg-[oklch(0.22_0.04_100)] py-24 px-4 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.46_0.095_128)]/20 to-transparent pointer-events-none" />
         <div className="relative max-w-xl mx-auto space-y-6">
           <h2 className="text-3xl md:text-4xl font-bold text-white">Ready to get started?</h2>
           <p className="text-white/50">Sign up in 30 seconds. No credit card. No phone number.</p>
@@ -167,7 +167,7 @@ export default function Home() {
             href="/auth/signup"
             className={buttonVariants({
               size: "lg",
-              className: "h-12 px-8 text-base bg-gradient-to-r from-violet-600 to-blue-600 hover:from-violet-700 hover:to-blue-700 border-0 text-white",
+              className: "h-12 px-8 text-base bg-gradient-to-r from-[oklch(0.46_0.095_128)] to-[oklch(0.55_0.08_100)] hover:from-[oklch(0.4_0.095_128)] hover:to-[oklch(0.48_0.08_100)] border-0 text-[oklch(0.97_0.01_100)]",
             })}
           >
             Create your account
@@ -177,7 +177,7 @@ export default function Home() {
       </section>
 
       {/* Minimal footer */}
-      <footer className="bg-[#0a0a0f] border-t border-white/5 py-6 text-center text-xs text-white/20">
+      <footer className="bg-[oklch(0.2_0.035_110)] border-t border-white/5 py-6 text-center text-xs text-white/30">
         © {new Date().getFullYear()} FixMyDorm
       </footer>
     </div>
