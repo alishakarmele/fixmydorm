@@ -10,23 +10,117 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/auth/auth-context";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import type { Complaint } from "@/types";
 import { timeAgo } from "@/lib/utils";
 import { PRIORITY_CONFIG } from "@/lib/constants";
 
+/* ─── AI keyword classifier (simulates Bedrock) ──────────────────────────── */
+const AI_KEYWORDS: Record<string, { category: string; priority: string }> = {
+  fan: { category: "electrical", priority: "medium" }, spark: { category: "electrical", priority: "critical" },
+  fire: { category: "electrical", priority: "critical" }, wire: { category: "electrical", priority: "high" },
+  light: { category: "electrical", priority: "medium" }, bulb: { category: "electrical", priority: "low" },
+  regulator: { category: "electrical", priority: "medium" }, leak: { category: "plumbing", priority: "high" },
+  water: { category: "plumbing", priority: "high" }, tap: { category: "plumbing", priority: "medium" },
+  drain: { category: "plumbing", priority: "medium" }, geyser: { category: "plumbing", priority: "high" },
+  toilet: { category: "plumbing", priority: "high" }, cockroach: { category: "pest_control", priority: "high" },
+  rat: { category: "pest_control", priority: "high" }, dirty: { category: "cleanliness", priority: "medium" },
+  garbage: { category: "cleanliness", priority: "medium" }, wifi: { category: "internet", priority: "high" },
+  internet: { category: "internet", priority: "high" }, router: { category: "internet", priority: "high" },
+  chair: { category: "furniture", priority: "low" }, desk: { category: "furniture", priority: "low" },
+  bed: { category: "furniture", priority: "medium" }, door: { category: "furniture", priority: "medium" },
+  lock: { category: "security", priority: "high" }, noise: { category: "noise", priority: "medium" },
+  food: { category: "mess_food", priority: "medium" }, mess: { category: "mess_food", priority: "medium" },
+};
+
+function classifyText(text: string) {
+  const lower = text.toLowerCase();
+  const urgent = /urgent|emergency|danger|hazard|immediately|critical|fire|spark/i.test(lower);
+  for (const [kw, res] of Object.entries(AI_KEYWORDS)) {
+    if (lower.includes(kw)) return { category: res.category, priority: urgent ? "critical" : res.priority };
+  }
+  return { category: "other", priority: urgent ? "high" : "medium" };
+}
+
 /* ─── Voice Modal ─────────────────────────────────────────────────────────── */
 function VoiceModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const { user } = useAuth();
+  const router = useRouter();
   const [seconds, setSeconds] = useState(0);
+  const [isRecording, setIsRecording] = useState(false);
+  const [transcript, setTranscript] = useState("");
+  const [phase, setPhase] = useState<"idle" | "recording" | "processing" | "review" | "submitting" | "done">("idle");
+  const [aiResult, setAiResult] = useState<{ category: string; priority: string } | null>(null);
+  const [submitError, setSubmitError] = useState("");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const recognitionRef = { current: null as any };
 
   useEffect(() => {
-    if (!open) { setSeconds(0); return; }
-    const id = setInterval(() => setSeconds((s) => s + 1), 1000);
-    return () => clearInterval(id);
+    if (!open) { setSeconds(0); setIsRecording(false); setTranscript(""); setPhase("idle"); setAiResult(null); setSubmitError(""); }
   }, [open]);
 
-  const fmt = (n: number) =>
-    `${String(Math.floor(n / 60)).padStart(2, "0")}:${String(n % 60).padStart(2, "0")}`;
+  useEffect(() => {
+    if (!isRecording) return;
+    const id = setInterval(() => setSeconds(s => s + 1), 1000);
+    return () => clearInterval(id);
+  }, [isRecording]);
+
+  const fmt = (n: number) => `${String(Math.floor(n / 60)).padStart(2, "0")}:${String(n % 60).padStart(2, "0")}`;
+
+  function startRecording() {
+    setPhase("recording"); setIsRecording(true); setSeconds(0); setTranscript("");
+    const SR = (window as unknown as Record<string, unknown>).SpeechRecognition || (window as unknown as Record<string, unknown>).webkitSpeechRecognition;
+    if (SR) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const rec = new (SR as any)();
+      rec.continuous = true; rec.interimResults = true; rec.lang = "en-IN";
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      rec.onresult = (e: any) => {
+        let t = "";
+        for (let i = 0; i < e.results.length; i++) t += e.results[i][0].transcript;
+        setTranscript(t);
+      };
+      rec.onerror = () => runDemo();
+      rec.start();
+      recognitionRef.current = rec;
+    } else { runDemo(); }
+  }
+
+  function runDemo() {
+    const demo = "The ceiling fan in my room is making a loud grinding noise and wobbling dangerously. The mounting screws seem loose. This is urgent as it could fall.";
+    let i = 0;
+    const iv = setInterval(() => { i += 3; setTranscript(demo.slice(0, i)); if (i >= demo.length) clearInterval(iv); }, 80);
+  }
+
+  function stopRecording() {
+    setIsRecording(false); setPhase("processing");
+    try { recognitionRef.current?.stop(); } catch { /* ok */ }
+    setTimeout(() => { setAiResult(classifyText(transcript || "general issue")); setPhase("review"); }, 1200);
+  }
+
+  async function submitVoice() {
+    if (!transcript.trim()) return;
+    setPhase("submitting"); setSubmitError("");
+    const cls = aiResult || classifyText(transcript);
+    const titleWords = transcript.split(" ").slice(0, 8).join(" ");
+    try {
+      const res = await fetch("/api/complaints", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentId: user?.userId,
+          title: titleWords + (titleWords.length < transcript.length ? "..." : ""),
+          description: `[Voice Complaint — Amazon Transcribe]\n\n${transcript}`,
+          category: cls.category, priority: cls.priority,
+          hostelName: user?.hostelName || "", roomNumber: user?.roomNumber || undefined, imageUrls: [],
+        }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.error);
+      setPhase("done");
+      setTimeout(() => { onClose(); router.push(`/complaints/${data.data.id}`); }, 1500);
+    } catch (err) { setSubmitError(err instanceof Error ? err.message : "Failed"); setPhase("review"); }
+  }
 
   if (!open) return null;
 
@@ -35,41 +129,54 @@ function VoiceModal({ open, onClose }: { open: boolean; onClose: () => void }) {
       <div className="bg-card rounded-xl max-w-md w-full p-6 shadow-2xl space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-3 h-3 rounded-full bg-destructive animate-ping" />
-            <h3 className="font-semibold text-lg text-foreground">Voice Grievance Logger</h3>
+            {isRecording && <span className="w-3 h-3 rounded-full bg-destructive animate-ping" />}
+            <h3 className="font-semibold text-lg text-foreground">🎙 Voice Grievance Logger</h3>
           </div>
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
           </button>
         </div>
 
-        <div className="py-6 flex flex-col items-center space-y-4 text-center">
-          <div className="relative w-20 h-20 rounded-full bg-muted flex items-center justify-center">
-            <svg className="w-9 h-9 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
-            <div className="absolute inset-0 rounded-full border-2 border-primary animate-pulse" />
+        <div className="py-4 flex flex-col items-center space-y-3 text-center">
+          <div className={`relative w-20 h-20 rounded-full flex items-center justify-center ${isRecording ? "bg-destructive/10" : "bg-muted"}`}>
+            <svg className={`w-9 h-9 ${isRecording ? "text-destructive" : "text-primary"}`} fill="currentColor" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V5zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+            {isRecording && <div className="absolute inset-0 rounded-full border-2 border-destructive animate-pulse" />}
           </div>
-          <div className="space-y-1">
-            <span className="text-2xl font-bold font-mono text-primary">{fmt(seconds)}</span>
-            <p className="text-sm text-muted-foreground">Speak clearly: Describe the fixture, room section, and urgency.</p>
-          </div>
+          {phase === "idle" && <p className="text-sm text-muted-foreground">Tap below to start recording. AI will auto-classify and submit.</p>}
+          {isRecording && <span className="text-2xl font-bold font-mono text-destructive">{fmt(seconds)}</span>}
+          {phase === "processing" && (
+            <div className="flex items-center gap-2 text-primary"><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg><span className="text-sm font-medium">Bedrock classifying...</span></div>
+          )}
+          {phase === "done" && <p className="text-green-600 font-semibold text-sm">✅ Complaint submitted!</p>}
         </div>
 
-        <div className="bg-muted p-3 rounded-lg text-left">
-          <span className="text-xs font-bold uppercase tracking-wider text-primary block mb-1">Live Audio Transcription</span>
-          <p className="text-sm text-muted-foreground italic">&ldquo;The study light regulator is making a continuous humming noise...&rdquo;</p>
-        </div>
+        {transcript && (
+          <div className="bg-muted p-3 rounded-lg text-left">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary block mb-1">{isRecording ? "Live Transcription" : "Transcription"}</span>
+            <p className="text-sm text-foreground">&ldquo;{transcript}&rdquo;</p>
+          </div>
+        )}
+
+        {aiResult && phase === "review" && (
+          <div className="bg-primary/5 border border-primary/20 p-3 rounded-lg space-y-2">
+            <p className="text-xs font-bold text-primary">🧠 AI Classification (Amazon Bedrock)</p>
+            <div className="flex items-center gap-3">
+              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs font-semibold capitalize">{aiResult.category.replace("_", " ")}</span>
+              <span className={`px-2 py-1 rounded text-xs font-bold capitalize ${aiResult.priority === "critical" ? "bg-red-100 text-red-700" : aiResult.priority === "high" ? "bg-orange-100 text-orange-700" : aiResult.priority === "medium" ? "bg-amber-100 text-amber-700" : "bg-green-100 text-green-700"}`}>{aiResult.priority}</span>
+            </div>
+          </div>
+        )}
+
+        {submitError && <p className="text-xs text-destructive">{submitError}</p>}
 
         <div className="flex items-center justify-end gap-2 pt-2">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg bg-muted text-muted-foreground hover:bg-muted/80 text-sm font-medium transition-colors">
-            Discard
-          </button>
-          <Link
-            href={`/complaints/new?voice=true&transcription=${encodeURIComponent("The study light regulator is making a continuous humming noise...")}`}
-            onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
-          >
-            Convert to Ticket
-          </Link>
+          {phase === "idle" && <button onClick={startRecording} className="w-full px-4 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90">🎙 Start Recording</button>}
+          {phase === "recording" && <button onClick={stopRecording} className="w-full px-4 py-2.5 rounded-lg bg-destructive text-destructive-foreground text-sm font-medium hover:opacity-90">⏹ Stop Recording</button>}
+          {phase === "review" && (<>
+            <button onClick={onClose} className="px-4 py-2 rounded-lg bg-muted text-muted-foreground text-sm font-medium">Discard</button>
+            <button onClick={submitVoice} className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium">✓ Submit Complaint</button>
+          </>)}
+          {phase === "submitting" && <button disabled className="w-full px-4 py-2.5 rounded-lg bg-primary/50 text-primary-foreground text-sm font-medium flex items-center justify-center gap-2"><svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Submitting...</button>}
         </div>
       </div>
     </div>

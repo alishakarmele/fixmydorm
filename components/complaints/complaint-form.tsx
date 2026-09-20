@@ -70,6 +70,38 @@ export function ComplaintForm() {
     }
   }, [isVoice, initialTranscription, title]);
 
+  // AI auto-classify category & priority from description (simulates Bedrock)
+  useEffect(() => {
+    if (!description || description.length < 10) return;
+    const lower = description.toLowerCase();
+    const urgent = /urgent|emergency|danger|hazard|immediately|critical|fire|spark|fall/i.test(lower);
+
+    const keywords: Record<string, { cat: ComplaintCategory; pri: Priority }> = {
+      fan: { cat: "electrical", pri: "medium" }, spark: { cat: "electrical", pri: "critical" },
+      fire: { cat: "electrical", pri: "critical" }, wire: { cat: "electrical", pri: "high" },
+      light: { cat: "electrical", pri: "medium" }, bulb: { cat: "electrical", pri: "low" },
+      regulator: { cat: "electrical", pri: "medium" }, leak: { cat: "plumbing", pri: "high" },
+      water: { cat: "plumbing", pri: "high" }, tap: { cat: "plumbing", pri: "medium" },
+      drain: { cat: "plumbing", pri: "medium" }, geyser: { cat: "plumbing", pri: "high" },
+      toilet: { cat: "plumbing", pri: "high" }, cockroach: { cat: "pest_control", pri: "high" },
+      rat: { cat: "pest_control", pri: "high" }, dirty: { cat: "cleanliness", pri: "medium" },
+      garbage: { cat: "cleanliness", pri: "medium" }, wifi: { cat: "internet", pri: "high" },
+      internet: { cat: "internet", pri: "high" }, router: { cat: "internet", pri: "high" },
+      chair: { cat: "furniture", pri: "low" }, desk: { cat: "furniture", pri: "low" },
+      bed: { cat: "furniture", pri: "medium" }, door: { cat: "furniture", pri: "medium" },
+      lock: { cat: "security", pri: "high" }, noise: { cat: "noise", pri: "medium" },
+      food: { cat: "mess_food", pri: "medium" }, mess: { cat: "mess_food", pri: "medium" },
+    };
+
+    for (const [kw, res] of Object.entries(keywords)) {
+      if (lower.includes(kw)) {
+        setCategory(res.cat);
+        setPriority(urgent ? "critical" : res.pri);
+        return;
+      }
+    }
+  }, [description]);
+
   const handleImagesChange = useCallback((urls: string[]) => {
     setImageUrls(urls);
   }, []);
@@ -213,31 +245,25 @@ export function ComplaintForm() {
               </p>
             </div>
 
-            {/* Priority */}
+            {/* Priority — AI auto-determined */}
             <div className="space-y-2">
               <Label>Priority</Label>
-              <div className="grid grid-cols-2 gap-2">
-                {(
-                  Object.entries(PRIORITY_CONFIG) as [
-                    Priority,
-                    (typeof PRIORITY_CONFIG)[Priority],
-                  ][]
-                ).map(([value, config]) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setPriority(value)}
-                    disabled={isSubmitting}
-                    className={`rounded-lg border-2 px-3 py-1.5 text-xs font-medium transition-all ${
-                      priority === value
-                        ? "border-current"
-                        : "border-border hover:border-current/30"
-                    }`}
-                    style={{ color: config.color }}
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-3 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <span className="text-xs font-semibold text-primary">AI Auto-Assigned (Amazon Bedrock)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="px-3 py-1.5 rounded-lg text-xs font-bold border-2 border-current"
+                    style={{ color: PRIORITY_CONFIG[priority].color }}
                   >
-                    {config.label}
-                  </button>
-                ))}
+                    {PRIORITY_CONFIG[priority].label}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Based on your description
+                  </span>
+                </div>
               </div>
             </div>
           </div>

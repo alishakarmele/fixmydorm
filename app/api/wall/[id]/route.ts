@@ -29,9 +29,19 @@ export async function PATCH(
         expressionValues = { ":inc": 1, ":now": new Date().toISOString() };
         break;
 
+      case "undo_upvote":
+        updateExpression = "SET upvotes = if_not_exists(upvotes, :zero) - :inc, updatedAt = :now";
+        expressionValues = { ":inc": 1, ":zero": 0, ":now": new Date().toISOString() };
+        break;
+
       case "affected":
         updateExpression = "SET affectedCount = affectedCount + :inc, updatedAt = :now";
         expressionValues = { ":inc": 1, ":now": new Date().toISOString() };
+        break;
+
+      case "undo_affected":
+        updateExpression = "SET affectedCount = if_not_exists(affectedCount, :zero) - :inc, updatedAt = :now";
+        expressionValues = { ":inc": 1, ":zero": 0, ":now": new Date().toISOString() };
         break;
 
       case "respond":
@@ -51,7 +61,7 @@ export async function PATCH(
 
       default:
         return NextResponse.json(
-          { success: false, error: "Invalid action. Use: upvote, affected, respond" },
+          { success: false, error: "Invalid action" },
           { status: 400 }
         );
     }

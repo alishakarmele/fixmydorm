@@ -96,6 +96,21 @@ export default function WallPage() {
   const [respondingTo, setRespondingTo] = useState<string | null>(null);
   const [responseText, setResponseText] = useState("");
 
+  // Track which posts this user has voted on (localStorage)
+  const [votedPosts, setVotedPosts] = useState<Record<string, { upvoted: boolean; affected: boolean }>>({});
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("fmd-wall-votes");
+      if (stored) setVotedPosts(JSON.parse(stored));
+    } catch { /* ignore */ }
+  }, []);
+
+  function saveVotes(newVotes: Record<string, { upvoted: boolean; affected: boolean }>) {
+    setVotedPosts(newVotes);
+    try { localStorage.setItem("fmd-wall-votes", JSON.stringify(newVotes)); } catch { /* ignore */ }
+  }
+
   const fetchPosts = useCallback(async () => {
     try {
       const res = await fetch("/api/wall");
@@ -130,14 +145,24 @@ export default function WallPage() {
   }
 
   async function handleAction(postId: string, action: "upvote" | "affected") {
+    const voteKey = action === "upvote" ? "upvoted" : "affected";
+    const alreadyVoted = votedPosts[postId]?.[voteKey] || false;
+    const direction = alreadyVoted ? "undo_" + action : action;
+
     try {
       const res = await fetch(`/api/wall/${postId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action }),
+        body: JSON.stringify({ action: direction }),
       });
       const data = await res.json();
-      if (data.success) setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, ...data.data } : p)));
+      if (data.success) {
+        setPosts((prev) => prev.map((p) => (p.id === postId ? { ...p, ...data.data } : p)));
+        const newVotes = { ...votedPosts };
+        if (!newVotes[postId]) newVotes[postId] = { upvoted: false, affected: false };
+        newVotes[postId][voteKey] = !alreadyVoted;
+        saveVotes(newVotes);
+      }
     } catch { console.error("Action failed"); }
   }
 
@@ -327,12 +352,20 @@ export default function WallPage() {
               <Separator />
 
               <CardFooter className="py-2 gap-2 flex-wrap">
-                <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => handleAction(post.id, "upvote")}>
-                  <ThumbsUp className="h-3 w-3" /> {post.upvotes}
+                <Button
+                  variant="ghost" size="sm"
+                  className={`h-7 text-xs gap-1 ${votedPosts[post.id]?.upvoted ? "text-primary bg-primary/10" : ""}`}
+                  onClick={() => handleAction(post.id, "upvote")}
+                >
+                  <ThumbsUp className={`h-3 w-3 ${votedPosts[post.id]?.upvoted ? "fill-current" : ""}`} /> {post.upvotes}
                 </Button>
-                <Button variant="ghost" size="sm" className="h-7 text-xs gap-1" onClick={() => handleAction(post.id, "affected")}>
+                <Button
+                  variant="ghost" size="sm"
+                  className={`h-7 text-xs gap-1 ${votedPosts[post.id]?.affected ? "text-orange-600 bg-orange-50" : ""}`}
+                  onClick={() => handleAction(post.id, "affected")}
+                >
                   <Users className="h-3 w-3" />
-                  Affected Too {post.affectedCount > 0 && `(${post.affectedCount})`}
+                  {votedPosts[post.id]?.affected ? "Affected ✓" : "Affected Too"} {post.affectedCount > 0 && `(${post.affectedCount})`}
                 </Button>
                 {role === "management" && !post.officialResponse && (
                   <Button
