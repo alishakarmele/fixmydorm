@@ -57,6 +57,7 @@ export type ComplaintStatus =
 export interface Complaint {
   id: string;
   studentId: string;
+  studentName?: string;
   title: string;
   description: string;
   category: ComplaintCategory;

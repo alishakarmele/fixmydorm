@@ -11,8 +11,8 @@
 
 "use client";
 
-import { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useCallback, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/lib/auth/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,8 +42,12 @@ export function ComplaintForm() {
   const router = useRouter();
   const { user } = useAuth();
 
+  const searchParams = useSearchParams();
+  const initialTranscription = searchParams.get("transcription") || "";
+  const isVoice = searchParams.get("voice") === "true";
+
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(initialTranscription);
   const [category, setCategory] = useState<ComplaintCategory>("other");
   const [priority, setPriority] = useState<Priority>("medium");
   const [hostelName, setHostelName] = useState(user?.hostelName || "");
@@ -57,6 +61,14 @@ export function ComplaintForm() {
     priority?: string;
     confidence?: number;
   } | null>(null);
+
+  // Auto-fill title based on transcription if available
+  useEffect(() => {
+    if (isVoice && initialTranscription && !title) {
+      const words = initialTranscription.split(" ").slice(0, 5).join(" ");
+      setTitle(words + (words.length < initialTranscription.length ? "..." : ""));
+    }
+  }, [isVoice, initialTranscription, title]);
 
   const handleImagesChange = useCallback((urls: string[]) => {
     setImageUrls(urls);

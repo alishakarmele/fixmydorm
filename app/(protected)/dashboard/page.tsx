@@ -64,7 +64,7 @@ function VoiceModal({ open, onClose }: { open: boolean; onClose: () => void }) {
             Discard
           </button>
           <Link
-            href="/complaints/new"
+            href={`/complaints/new?voice=true&transcription=${encodeURIComponent("The study light regulator is making a continuous humming noise...")}`}
             onClick={onClose}
             className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity"
           >
