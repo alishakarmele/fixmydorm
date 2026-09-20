@@ -8,7 +8,7 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -54,10 +54,19 @@ function VoiceModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [aiResult, setAiResult] = useState<{ category: string; priority: string } | null>(null);
   const [submitError, setSubmitError] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const recognitionRef = { current: null as any };
+  const recognitionRef = useRef<any>(null);
 
+  // Cleanup: kill mic when modal closes
   useEffect(() => {
-    if (!open) { setSeconds(0); setIsRecording(false); setTranscript(""); setPhase("idle"); setAiResult(null); setSubmitError(""); }
+    if (!open) {
+      // Force-stop the mic
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch { /* ok */ }
+        try { recognitionRef.current.abort(); } catch { /* ok */ }
+        recognitionRef.current = null;
+      }
+      setSeconds(0); setIsRecording(false); setTranscript(""); setPhase("idle"); setAiResult(null); setSubmitError("");
+    }
   }, [open]);
 
   useEffect(() => {
@@ -95,7 +104,12 @@ function VoiceModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
   function stopRecording() {
     setIsRecording(false); setPhase("processing");
-    try { recognitionRef.current?.stop(); } catch { /* ok */ }
+    // Fully stop and release mic
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch { /* ok */ }
+      try { recognitionRef.current.abort(); } catch { /* ok */ }
+      recognitionRef.current = null;
+    }
     setTimeout(() => { setAiResult(classifyText(transcript || "general issue")); setPhase("review"); }, 1200);
   }
 
