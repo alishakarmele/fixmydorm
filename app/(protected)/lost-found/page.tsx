@@ -133,17 +133,17 @@ export default function LostFoundPage() {
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between anim-fade-in-up">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-            <PackageSearch className="h-6 w-6" />
-            Lost & Found
+          <h1 className="text-2xl font-extrabold tracking-tight flex items-center gap-2">
+            <PackageSearch className="h-6 w-6 text-primary" />
+            <span className="bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.45_0.06_50)] bg-clip-text text-transparent">Lost & Found</span>
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
             Report lost items or help return found ones
           </p>
         </div>
-        <Button onClick={() => setShowForm(!showForm)}>
+        <Button onClick={() => setShowForm(!showForm)} className="bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.35_0.08_130)] text-white hover:shadow-lg hover:shadow-[oklch(0.42_0.10_130/0.25)] transition-all duration-400 hover:scale-105">
           {showForm ? <X className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
           {showForm ? "Cancel" : "Report Item"}
         </Button>
@@ -151,7 +151,7 @@ export default function LostFoundPage() {
 
       {/* New Item Form */}
       {showForm && (
-        <Card className="border-primary/20">
+        <Card className="border-primary/20 anim-pop-subtle">
           <form onSubmit={handleSubmit}>
             <CardContent className="pt-4 space-y-3">
               {error && (
@@ -249,11 +249,11 @@ export default function LostFoundPage() {
           <p className="text-muted-foreground text-sm mt-1">No lost or found items reported yet.</p>
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 stagger-children">
           {filtered.map((item) => (
             <Card
               key={item.id}
-              className={`transition-all hover:shadow-sm ${item.status === "matched" ? "border-green-300 ring-1 ring-green-100" : ""}`}
+              className={`transition-all duration-500 hover:shadow-xl hover:-translate-y-1.5 hover:border-primary/15 hover-gradient-border ${item.status === "matched" ? "border-green-300 ring-1 ring-green-100" : ""}`}
             >
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-2">

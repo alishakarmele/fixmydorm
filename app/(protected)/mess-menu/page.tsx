@@ -69,10 +69,10 @@ export default function MessMenuPage() {
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-          <UtensilsCrossed className="h-6 w-6" />
-          Mess Menu
+      <div className="anim-fade-in-up">
+        <h1 className="text-2xl font-extrabold tracking-tight flex items-center gap-2">
+          <UtensilsCrossed className="h-6 w-6 text-primary" />
+          <span className="bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.72_0.09_42)] bg-clip-text text-transparent">Mess Menu</span>
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
           {dayName}, {dateStr}
@@ -80,7 +80,7 @@ export default function MessMenuPage() {
       </div>
 
       {/* Menu Cards */}
-      <div className="space-y-4">
+      <div className="space-y-4 stagger-children">
         {(Object.entries(MEAL_TYPES) as [string, string][]).map(
           ([key, label]) => {
             const menu = MOCK_MENU[key];
@@ -89,7 +89,7 @@ export default function MessMenuPage() {
             const currentRating = ratings[key];
 
             return (
-              <Card key={key} className="overflow-hidden">
+              <Card key={key} className="overflow-hidden transition-all duration-500 hover:shadow-xl hover:-translate-y-1 hover:border-primary/15 hover-gradient-border">
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-base flex items-center gap-2">
@@ -129,7 +129,7 @@ export default function MessMenuPage() {
                         <button
                           key={star}
                           onClick={() => rateMeal(key, star)}
-                          className="p-0.5 transition-transform hover:scale-110"
+                          className="p-0.5 transition-all duration-300 hover:scale-125"
                         >
                           <Star
                             className={`h-5 w-5 ${

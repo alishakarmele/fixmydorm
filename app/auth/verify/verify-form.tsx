@@ -50,9 +50,9 @@ export function VerifyForm() {
   }
 
   return (
-    <Card className="border-border/40 shadow-lg">
+    <Card className="border-border/30 shadow-xl shadow-[oklch(0.42_0.10_130/0.05)] backdrop-blur-sm anim-pop-subtle">
       <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-2xl font-bold">Verify your email</CardTitle>
+        <CardTitle className="text-2xl font-extrabold bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.45_0.06_50)] bg-clip-text text-transparent">Verify your email</CardTitle>
         <CardDescription>
           We sent a verification code to{" "}
           {emailFromParam ? (
@@ -67,7 +67,7 @@ export function VerifyForm() {
 
       {success ? (
         <CardContent className="text-center py-8">
-          <CheckCircle2 className="mx-auto h-12 w-12 text-green-500 mb-4" />
+          <CheckCircle2 className="mx-auto h-12 w-12 text-green-500 mb-4 anim-pop-in" />
           <p className="text-lg font-medium">Email verified!</p>
           <p className="text-sm text-muted-foreground mt-1">
             Redirecting to login...
@@ -122,7 +122,7 @@ export function VerifyForm() {
           </CardContent>
 
           <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className="w-full bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.35_0.08_130)] text-white hover:shadow-lg hover:shadow-[oklch(0.42_0.10_130/0.25)] transition-all duration-400 hover:scale-[1.02]" disabled={isLoading}>
               {isLoading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (

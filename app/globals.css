@@ -49,112 +49,113 @@
 }
 
 /* ============================================================
-   OLIVE · CREAM · PEACH pastel palette
+   OLD MONEY · OLIVE · PEACH · BROWN palette
+   Rich warm tones with vintage luxury feel
    ============================================================ */
 :root {
-  /* Cream warm background */
-  --background: oklch(0.975 0.014 88);
-  --foreground: oklch(0.22 0.025 80);
+  /* Warm parchment background */
+  --background: oklch(0.965 0.016 78);
+  --foreground: oklch(0.20 0.03 60);
 
-  /* Card — slightly lighter cream */
-  --card: oklch(0.99 0.008 85);
-  --card-foreground: oklch(0.22 0.025 80);
+  /* Card — ivory cream with warmth */
+  --card: oklch(0.985 0.01 75);
+  --card-foreground: oklch(0.20 0.03 60);
 
-  --popover: oklch(0.99 0.008 85);
-  --popover-foreground: oklch(0.22 0.025 80);
+  --popover: oklch(0.985 0.01 75);
+  --popover-foreground: oklch(0.20 0.03 60);
 
-  /* Primary — olive green */
-  --primary: oklch(0.46 0.095 128);
-  --primary-foreground: oklch(0.97 0.01 100);
+  /* Primary — deep olive green */
+  --primary: oklch(0.42 0.10 130);
+  --primary-foreground: oklch(0.97 0.008 85);
 
-  /* Secondary — warm sand */
-  --secondary: oklch(0.93 0.025 80);
-  --secondary-foreground: oklch(0.32 0.04 100);
+  /* Secondary — warm camel / sand */
+  --secondary: oklch(0.90 0.035 70);
+  --secondary-foreground: oklch(0.28 0.04 65);
 
-  /* Muted — soft oat */
-  --muted: oklch(0.935 0.02 85);
-  --muted-foreground: oklch(0.52 0.03 90);
+  /* Muted — soft linen */
+  --muted: oklch(0.925 0.022 75);
+  --muted-foreground: oklch(0.48 0.03 60);
 
-  /* Accent — peach */
-  --accent: oklch(0.91 0.055 45);
-  --accent-foreground: oklch(0.3 0.05 50);
+  /* Accent — blush peach */
+  --accent: oklch(0.88 0.065 42);
+  --accent-foreground: oklch(0.28 0.05 42);
 
   --destructive: oklch(0.577 0.245 27.325);
 
-  /* Border — warm taupe */
-  --border: oklch(0.88 0.025 80);
-  --input: oklch(0.88 0.025 80);
+  /* Border — antique tan */
+  --border: oklch(0.86 0.03 70);
+  --input: oklch(0.86 0.03 70);
 
-  /* Ring — olive */
-  --ring: oklch(0.55 0.09 128);
+  /* Ring — deep olive */
+  --ring: oklch(0.50 0.10 130);
 
-  /* Charts — olive, peach, sage, blush, sand */
-  --chart-1: oklch(0.55 0.1 128);
-  --chart-2: oklch(0.75 0.08 45);
-  --chart-3: oklch(0.65 0.07 160);
-  --chart-4: oklch(0.8 0.07 30);
-  --chart-5: oklch(0.7 0.06 90);
+  /* Charts — olive, peach, espresso, blush, sage */
+  --chart-1: oklch(0.50 0.10 130);
+  --chart-2: oklch(0.72 0.09 42);
+  --chart-3: oklch(0.45 0.06 50);
+  --chart-4: oklch(0.78 0.07 30);
+  --chart-5: oklch(0.60 0.06 130);
 
   --radius: 0.75rem;
 
-  /* Sidebar — pale sage */
-  --sidebar: oklch(0.96 0.018 110);
-  --sidebar-foreground: oklch(0.28 0.03 100);
-  --sidebar-primary: oklch(0.46 0.095 128);
-  --sidebar-primary-foreground: oklch(0.97 0.01 100);
-  --sidebar-accent: oklch(0.91 0.04 88);
-  --sidebar-accent-foreground: oklch(0.32 0.04 100);
-  --sidebar-border: oklch(0.87 0.02 95);
-  --sidebar-ring: oklch(0.55 0.09 128);
+  /* Sidebar — parchment sage */
+  --sidebar: oklch(0.95 0.02 100);
+  --sidebar-foreground: oklch(0.25 0.03 65);
+  --sidebar-primary: oklch(0.42 0.10 130);
+  --sidebar-primary-foreground: oklch(0.97 0.008 85);
+  --sidebar-accent: oklch(0.90 0.04 75);
+  --sidebar-accent-foreground: oklch(0.28 0.04 65);
+  --sidebar-border: oklch(0.86 0.025 85);
+  --sidebar-ring: oklch(0.50 0.10 130);
 }
 
 .dark {
-  /* Dark olive-tinted background */
-  --background: oklch(0.17 0.02 100);
-  --foreground: oklch(0.94 0.015 85);
+  /* Dark espresso background */
+  --background: oklch(0.15 0.025 60);
+  --foreground: oklch(0.92 0.018 75);
 
-  --card: oklch(0.22 0.025 100);
-  --card-foreground: oklch(0.94 0.015 85);
+  --card: oklch(0.20 0.03 60);
+  --card-foreground: oklch(0.92 0.018 75);
 
-  --popover: oklch(0.22 0.025 100);
-  --popover-foreground: oklch(0.94 0.015 85);
+  --popover: oklch(0.20 0.03 60);
+  --popover-foreground: oklch(0.92 0.018 75);
 
-  /* Primary — bright olive/sage in dark */
-  --primary: oklch(0.7 0.1 128);
-  --primary-foreground: oklch(0.17 0.025 100);
+  /* Primary — bright sage in dark */
+  --primary: oklch(0.68 0.10 130);
+  --primary-foreground: oklch(0.15 0.025 60);
 
-  /* Secondary — deep warm brown */
-  --secondary: oklch(0.28 0.025 90);
-  --secondary-foreground: oklch(0.94 0.015 85);
+  /* Secondary — dark mocha */
+  --secondary: oklch(0.26 0.03 60);
+  --secondary-foreground: oklch(0.92 0.018 75);
 
-  /* Muted — muted olive-brown */
-  --muted: oklch(0.28 0.025 90);
-  --muted-foreground: oklch(0.65 0.025 90);
+  /* Muted — muted walnut */
+  --muted: oklch(0.26 0.025 60);
+  --muted-foreground: oklch(0.60 0.025 65);
 
-  /* Accent — deep peach */
-  --accent: oklch(0.35 0.04 50);
-  --accent-foreground: oklch(0.88 0.05 45);
+  /* Accent — dark amber peach */
+  --accent: oklch(0.32 0.04 45);
+  --accent-foreground: oklch(0.85 0.06 42);
 
   --destructive: oklch(0.704 0.191 22.216);
 
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.65 0.08 128);
+  --ring: oklch(0.62 0.08 130);
 
-  --chart-1: oklch(0.7 0.1 128);
-  --chart-2: oklch(0.75 0.08 45);
-  --chart-3: oklch(0.6 0.07 160);
-  --chart-4: oklch(0.72 0.07 30);
-  --chart-5: oklch(0.65 0.06 90);
+  --chart-1: oklch(0.68 0.10 130);
+  --chart-2: oklch(0.72 0.09 42);
+  --chart-3: oklch(0.55 0.06 160);
+  --chart-4: oklch(0.70 0.07 30);
+  --chart-5: oklch(0.58 0.06 90);
 
-  --sidebar: oklch(0.2 0.025 100);
-  --sidebar-foreground: oklch(0.94 0.015 85);
-  --sidebar-primary: oklch(0.7 0.1 128);
-  --sidebar-primary-foreground: oklch(0.17 0.025 100);
-  --sidebar-accent: oklch(0.28 0.025 90);
-  --sidebar-accent-foreground: oklch(0.94 0.015 85);
+  --sidebar: oklch(0.18 0.025 60);
+  --sidebar-foreground: oklch(0.92 0.018 75);
+  --sidebar-primary: oklch(0.68 0.10 130);
+  --sidebar-primary-foreground: oklch(0.15 0.025 60);
+  --sidebar-accent: oklch(0.26 0.03 60);
+  --sidebar-accent-foreground: oklch(0.92 0.018 75);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.65 0.08 128);
+  --sidebar-ring: oklch(0.62 0.08 130);
 }
 
 @layer base {
@@ -166,5 +167,460 @@
   }
   html {
     @apply font-sans;
+    scroll-behavior: smooth;
   }
 }
+
+/* ============================================================
+   ✦ HYPER-SMOOTH GLOBAL TRANSITIONS
+   Every element gets buttery transitions by default
+   ============================================================ */
+@layer base {
+  *,
+  *::before,
+  *::after {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* ============================================================
+   ✦ KEYFRAME ANIMATIONS
+   Old money luxury: slow, confident, deliberate movements
+   ============================================================ */
+
+/* Floating ambient blobs */
+@keyframes float-gentle {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25%      { transform: translate(18px, -12px) scale(1.02); }
+  50%      { transform: translate(-8px, -20px) scale(1.04); }
+  75%      { transform: translate(-18px, 8px) scale(0.98); }
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  33%      { transform: translate(-15px, 20px) scale(0.97) rotate(1deg); }
+  66%      { transform: translate(20px, -10px) scale(1.03) rotate(-1deg); }
+}
+
+@keyframes float-drift {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(12px, 16px); }
+}
+
+/* Fade & slide entrance animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-down {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in-left {
+  from { opacity: 0; transform: translateX(-28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-in-right {
+  from { opacity: 0; transform: translateX(28px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-in-scale {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Pop / spring entrance */
+@keyframes pop-in {
+  0%   { opacity: 0; transform: scale(0.7); }
+  60%  { opacity: 1; transform: scale(1.05); }
+  80%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pop-in-subtle {
+  0%   { opacity: 0; transform: scale(0.9); }
+  70%  { opacity: 1; transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* Shimmer / text sweep */
+@keyframes shimmer-sweep {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Glow pulse */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(0.42 0.10 130 / 0); }
+  50%      { box-shadow: 0 0 20px 4px oklch(0.42 0.10 130 / 0.15); }
+}
+
+@keyframes glow-peach {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(0.88 0.065 42 / 0); }
+  50%      { box-shadow: 0 0 20px 4px oklch(0.88 0.065 42 / 0.2); }
+}
+
+/* Breathing / pulse */
+@keyframes breathe {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%      { opacity: 0.7; transform: scale(1.02); }
+}
+
+@keyframes breathe-ring {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50%      { opacity: 0.6; transform: scale(1.08); }
+}
+
+/* Slide in from edges */
+@keyframes slide-in-bottom {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+/* Stagger cascade for lists */
+@keyframes cascade-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Spin slow */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Background grain noise for luxury texture */
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0); }
+  10%      { transform: translate(-5%, -10%); }
+  20%      { transform: translate(-15%, 5%); }
+  30%      { transform: translate(7%, -15%); }
+  40%      { transform: translate(-5%, 15%); }
+  50%      { transform: translate(-15%, 10%); }
+  60%      { transform: translate(15%, 0%); }
+  70%      { transform: translate(0%, 10%); }
+  80%      { transform: translate(3%, 15%); }
+  90%      { transform: translate(-10%, 5%); }
+}
+
+/* ============================================================
+   ✦ ANIMATION UTILITY CLASSES
+   ============================================================ */
+
+/* Floating blobs */
+.anim-float-gentle  { animation: float-gentle  10s ease-in-out infinite; }
+.anim-float-slow    { animation: float-slow    14s ease-in-out infinite; }
+.anim-float-drift   { animation: float-drift   12s ease-in-out infinite; }
+
+/* Entrance animations */
+.anim-fade-in       { animation: fade-in       0.6s ease-out both; }
+.anim-fade-in-up    { animation: fade-in-up    0.7s ease-out both; }
+.anim-fade-in-down  { animation: fade-in-down  0.6s ease-out both; }
+.anim-fade-in-left  { animation: fade-in-left  0.7s ease-out both; }
+.anim-fade-in-right { animation: fade-in-right 0.7s ease-out both; }
+.anim-fade-in-scale { animation: fade-in-scale 0.5s ease-out both; }
+.anim-pop-in        { animation: pop-in        0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.anim-pop-subtle    { animation: pop-in-subtle 0.5s ease-out both; }
+.anim-cascade       { animation: cascade-in    0.5s ease-out both; }
+.anim-slide-up      { animation: slide-in-bottom 0.5s ease-out both; }
+.anim-slide-right   { animation: slide-in-right  0.5s ease-out both; }
+
+/* Shimmer text */
+.anim-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer-sweep 4s linear infinite;
+}
+
+/* Glow effects */
+.anim-glow        { animation: glow-pulse 3s ease-in-out infinite; }
+.anim-glow-peach  { animation: glow-peach 3s ease-in-out infinite; }
+
+/* Breathing */
+.anim-breathe      { animation: breathe      4s ease-in-out infinite; }
+.anim-breathe-ring { animation: breathe-ring 4s ease-in-out infinite; }
+
+/* Spin */
+.anim-spin-slow { animation: spin-slow 20s linear infinite; }
+
+/* Stagger delay helpers */
+.delay-0   { animation-delay: 0s; }
+.delay-75  { animation-delay: 75ms; }
+.delay-100 { animation-delay: 100ms; }
+.delay-150 { animation-delay: 150ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-600 { animation-delay: 600ms; }
+.delay-700 { animation-delay: 700ms; }
+.delay-800 { animation-delay: 800ms; }
+.delay-1000 { animation-delay: 1000ms; }
+
+/* ============================================================
+   ✦ INTERACTIVE HOVER EFFECTS
+   Old money: confident, smooth, understated luxury
+   ============================================================ */
+
+/* Cards — lift with warm shadow on hover */
+.hover-lift {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.4s ease,
+              border-color 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-6px) scale(1.01);
+  box-shadow:
+    0 12px 40px -8px oklch(0.42 0.10 130 / 0.12),
+    0 4px 12px -2px oklch(0.42 0.10 130 / 0.06);
+}
+
+/* Peach glow lift */
+.hover-lift-peach {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.4s ease;
+}
+.hover-lift-peach:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 40px -8px oklch(0.88 0.065 42 / 0.2),
+    0 4px 12px -2px oklch(0.88 0.065 42 / 0.1);
+}
+
+/* Glassmorphism card */
+.glass {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background: oklch(0.985 0.01 75 / 0.7);
+  border: 1px solid oklch(0.86 0.03 70 / 0.5);
+}
+.glass-dark {
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background: oklch(0.20 0.03 60 / 0.6);
+  border: 1px solid oklch(1 0 0 / 0.08);
+}
+
+/* Icon pop on hover */
+.hover-icon-pop {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.hover-icon-pop:hover {
+  transform: scale(1.15) rotate(5deg);
+}
+
+/* Button press effect */
+.hover-press {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.hover-press:hover {
+  transform: scale(1.04);
+}
+.hover-press:active {
+  transform: scale(0.97);
+}
+
+/* Blur reveal on hover */
+.hover-blur-reveal {
+  filter: blur(0px);
+  transition: filter 0.5s ease, transform 0.5s ease;
+}
+.hover-blur-reveal:hover {
+  filter: blur(0px);
+  transform: scale(1.02);
+}
+
+/* Underline sweep */
+.hover-underline-sweep {
+  position: relative;
+}
+.hover-underline-sweep::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, oklch(0.42 0.10 130), oklch(0.88 0.065 42));
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 999px;
+}
+.hover-underline-sweep:hover::after {
+  width: 100%;
+}
+
+/* Gradient border on hover */
+.hover-gradient-border {
+  position: relative;
+  z-index: 0;
+}
+.hover-gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, oklch(0.42 0.10 130 / 0), oklch(0.88 0.065 42 / 0));
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  transition: background 0.4s ease;
+  z-index: -1;
+}
+.hover-gradient-border:hover::before {
+  background: linear-gradient(135deg, oklch(0.42 0.10 130 / 0.5), oklch(0.88 0.065 42 / 0.5));
+}
+
+/* ============================================================
+   ✦ LUXURY TEXTURE OVERLAYS
+   ============================================================ */
+
+/* Subtle grain texture for premium feel */
+.texture-grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Grid pattern overlay */
+.texture-grid::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='%23666'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Dot pattern */
+.texture-dots::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: radial-gradient(circle, oklch(0.42 0.10 130 / 0.3) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   ✦ SCROLLBAR STYLING
+   Old money — minimal, elegant
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: oklch(0.42 0.10 130 / 0.15);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.42 0.10 130 / 0.3);
+}
+
+/* ============================================================
+   ✦ SELECTION STYLING
+   ============================================================ */
+::selection {
+  background: oklch(0.42 0.10 130 / 0.15);
+  color: oklch(0.20 0.03 60);
+}
+
+/* ============================================================
+   ✦ FOCUS VISIBLE RING
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid oklch(0.42 0.10 130 / 0.4);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ============================================================
+   ✦ SHADCN COMPONENT OVERRIDES
+   Inject smooth transitions into shadcn components
+   ============================================================ */
+
+/* Card smooth hover */
+[data-slot="card"] {
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.4s ease,
+              border-color 0.3s ease,
+              background-color 0.3s ease;
+}
+
+/* Button hyper-smooth */
+[data-slot="button"] {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+[data-slot="button"]:hover {
+  transform: translateY(-1px);
+}
+[data-slot="button"]:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+/* Badge subtle pop */
+[data-slot="badge"] {
+  transition: all 0.3s ease;
+}
+[data-slot="badge"]:hover {
+  transform: scale(1.05);
+}
+
+/* Input focus glow */
+[data-slot="input"]:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px oklch(0.42 0.10 130 / 0.1);
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+/* ============================================================
+   ✦ PAGE TRANSITION
+   Smooth page content entrance
+   ============================================================ */
+main {
+  animation: fade-in-up 0.5s ease-out both;
+}
+
+/* ============================================================
+   ✦ STAGGER ANIMATION FOR LIST CHILDREN
+   Apply .stagger-children to a parent, children auto-animate
+   ============================================================ */
+.stagger-children > * {
+  animation: cascade-in 0.5s ease-out both;
+}
+.stagger-children > *:nth-child(1)  { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2)  { animation-delay: 60ms; }
+.stagger-children > *:nth-child(3)  { animation-delay: 120ms; }
+.stagger-children > *:nth-child(4)  { animation-delay: 180ms; }
+.stagger-children > *:nth-child(5)  { animation-delay: 240ms; }
+.stagger-children > *:nth-child(6)  { animation-delay: 300ms; }
+.stagger-children > *:nth-child(7)  { animation-delay: 360ms; }
+.stagger-children > *:nth-child(8)  { animation-delay: 420ms; }
+.stagger-children > *:nth-child(9)  { animation-delay: 480ms; }
+.stagger-children > *:nth-child(10) { animation-delay: 540ms; }
+.stagger-children > *:nth-child(11) { animation-delay: 600ms; }
+.stagger-children > *:nth-child(12) { animation-delay: 660ms; }

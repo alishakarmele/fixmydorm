@@ -87,10 +87,10 @@ export default function AIHelpPage() {
   return (
     <div className="max-w-2xl mx-auto flex flex-col h-[calc(100vh-12rem)]">
       {/* Header */}
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-          <BotMessageSquare className="h-6 w-6" />
-          AI Help Agent
+      <div className="mb-4 anim-fade-in-up">
+        <h1 className="text-2xl font-extrabold tracking-tight flex items-center gap-2">
+          <BotMessageSquare className="h-6 w-6 text-primary" />
+          <span className="bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.72_0.09_42)] bg-clip-text text-transparent">AI Help Agent</span>
         </h1>
         <p className="text-muted-foreground text-sm mt-1 flex items-center gap-1">
           <Sparkles className="h-3 w-3" />
@@ -99,17 +99,17 @@ export default function AIHelpPage() {
       </div>
 
       {/* Chat Messages */}
-      <Card className="flex-1 overflow-y-auto p-4 space-y-4 mb-4">
+      <Card className="flex-1 overflow-y-auto p-4 space-y-4 mb-4 border-border/50 shadow-inner">
         {messages.map((msg, i) => (
           <div
             key={i}
             className={`flex gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
           >
             <div
-              className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 ${
+              className={`h-8 w-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 ${
                 msg.role === "assistant"
-                  ? "bg-primary/10 text-primary"
-                  : "bg-muted"
+                  ? "bg-gradient-to-br from-primary/20 to-primary/5 text-primary"
+                  : "bg-gradient-to-br from-accent/30 to-accent/10"
               }`}
             >
               {msg.role === "assistant" ? (
@@ -119,9 +119,9 @@ export default function AIHelpPage() {
               )}
             </div>
             <div
-              className={`rounded-2xl px-4 py-2.5 max-w-[80%] text-sm ${
+              className={`rounded-2xl px-4 py-2.5 max-w-[80%] text-sm anim-fade-in-scale ${
                 msg.role === "user"
-                  ? "bg-primary text-primary-foreground rounded-tr-sm"
+                  ? "bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.35_0.08_130)] text-white rounded-tr-sm shadow-md shadow-[oklch(0.42_0.10_130/0.15)]"
                   : "bg-muted rounded-tl-sm"
               }`}
             >
@@ -151,7 +151,7 @@ export default function AIHelpPage() {
             <button
               key={s}
               onClick={() => sendMessage(s)}
-              className="rounded-full border bg-background px-3 py-1.5 text-xs hover:bg-muted transition-colors"
+              className="rounded-full border bg-background px-3.5 py-1.5 text-xs hover:bg-accent hover:text-primary hover:border-primary/20 hover:scale-105 transition-all duration-300 hover:shadow-sm"
             >
               {s}
             </button>
@@ -174,7 +174,7 @@ export default function AIHelpPage() {
           disabled={isLoading}
           className="flex-1"
         />
-        <Button type="submit" disabled={isLoading || !input.trim()}>
+        <Button type="submit" disabled={isLoading || !input.trim()} className="bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.35_0.08_130)] text-white hover:shadow-lg hover:shadow-[oklch(0.42_0.10_130/0.25)] transition-all duration-400 hover:scale-105">
           {isLoading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (

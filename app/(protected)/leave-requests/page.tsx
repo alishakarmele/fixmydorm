@@ -124,18 +124,18 @@ export default function LeaveRequestsPage() {
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between anim-fade-in-up">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-            <DoorOpen className="h-6 w-6" />
-            Leave Requests
+          <h1 className="text-2xl font-extrabold tracking-tight flex items-center gap-2">
+            <DoorOpen className="h-6 w-6 text-primary" />
+            <span className="bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.72_0.09_42)] bg-clip-text text-transparent">Leave Requests</span>
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
             {role === "management" ? "Review student leave requests" : "Request early leave or late entry"}
           </p>
         </div>
         {role === "student" && (
-          <Button onClick={() => setShowForm(!showForm)}>
+          <Button onClick={() => setShowForm(!showForm)} className="bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.35_0.08_130)] text-white hover:shadow-lg hover:shadow-[oklch(0.42_0.10_130/0.25)] transition-all duration-400 hover:scale-105">
             {showForm ? <X className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
             {showForm ? "Cancel" : "New Request"}
           </Button>
@@ -144,7 +144,7 @@ export default function LeaveRequestsPage() {
 
       {/* Form */}
       {showForm && (
-        <Card className="border-primary/20">
+        <Card className="border-primary/20 anim-pop-subtle">
           <form onSubmit={handleSubmit}>
             <CardContent className="pt-4 space-y-3">
               {error && (
@@ -212,11 +212,11 @@ export default function LeaveRequestsPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-3 stagger-children">
           {requests.map((req) => {
             const StatusIcon = STATUS_ICONS[req.status];
             return (
-              <Card key={req.id}>
+              <Card key={req.id} className="transition-all duration-500 hover:shadow-lg hover:-translate-y-1 hover:border-primary/15 hover-gradient-border">
                 <CardContent className="py-3">
                   <div className="flex items-start gap-3">
                     <div className={`rounded-lg p-2 border ${STATUS_COLORS[req.status]}`}>

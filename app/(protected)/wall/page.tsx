@@ -188,17 +188,18 @@ export default function WallPage() {
     <div className="space-y-6 max-w-2xl mx-auto">
 
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between anim-fade-in-up">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-            <Megaphone className="h-6 w-6" /> The Wall
+          <h1 className="text-2xl font-extrabold tracking-tight flex items-center gap-2">
+            <Megaphone className="h-6 w-6 text-primary" />
+            <span className="bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.72_0.09_42)] bg-clip-text text-transparent">The Wall</span>
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
             Anonymous grievance board · Speak up, stay anonymous
           </p>
         </div>
         {role === "student" && (
-          <Button onClick={() => setShowForm(!showForm)}>
+          <Button onClick={() => setShowForm(!showForm)} className="bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.35_0.08_130)] text-white hover:shadow-lg hover:shadow-[oklch(0.42_0.10_130/0.25)] transition-all duration-400 hover:scale-105">
             {showForm ? <X className="mr-2 h-4 w-4" /> : <Plus className="mr-2 h-4 w-4" />}
             {showForm ? "Cancel" : "Post"}
           </Button>
@@ -206,7 +207,7 @@ export default function WallPage() {
       </div>
 
       {/* ── AI Power Banner ────────────────────────────────────────────── */}
-      <div className="flex flex-wrap gap-2 p-3 bg-primary/5 border border-primary/20 rounded-xl text-xs">
+      <div className="flex flex-wrap gap-2 p-3 bg-primary/5 border border-primary/20 rounded-xl text-xs anim-fade-in-up delay-100 hover:bg-primary/8 transition-colors duration-400">
         <span className="flex items-center gap-1 text-muted-foreground font-medium">
           <Sparkles className="h-3 w-3 text-primary" /> AI-powered by AWS:
         </span>
@@ -226,7 +227,7 @@ export default function WallPage() {
 
       {/* ── New Post Form ─────────────────────────────────────────────── */}
       {showForm && (
-        <Card className="border-primary/20">
+        <Card className="border-primary/20 anim-pop-subtle">
           <CardContent className="pt-4 space-y-3">
             <div className="flex items-start gap-2 text-xs text-muted-foreground bg-muted/50 p-2 rounded-lg">
               <Brain className="h-3.5 w-3.5 mt-0.5 text-primary shrink-0" />
@@ -276,11 +277,11 @@ export default function WallPage() {
           <p className="text-muted-foreground text-sm mt-1">Be the first to speak up anonymously.</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 stagger-children">
           {posts.map((post) => (
             <Card
               key={post.id}
-              className={`transition-all hover:shadow-sm ${
+              className={`transition-all duration-500 hover:shadow-xl hover:-translate-y-1 hover:border-primary/15 hover-gradient-border ${
                 (post.aiTrendScore ?? 0) >= 85 ? "border-red-200 ring-1 ring-red-100" :
                 (post.aiTrendScore ?? 0) >= 70 ? "border-amber-200" : ""
               }`}

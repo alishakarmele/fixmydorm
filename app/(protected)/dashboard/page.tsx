@@ -139,8 +139,8 @@ function VoiceModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-card rounded-xl max-w-md w-full p-6 shadow-2xl space-y-4">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-md z-50 flex items-center justify-center p-4 anim-fade-in">
+      <div className="bg-card rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 anim-pop-in border border-border/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {isRecording && <span className="w-3 h-3 rounded-full bg-destructive animate-ping" />}
@@ -230,7 +230,9 @@ export default function DashboardPage() {
       const res = await fetch("/api/complaints");
       if (!res.ok) return;
       const data = await res.json();
-      setComplaints(data.complaints ?? []);
+      if (data.success) {
+        setComplaints(data.data ?? []);
+      }
     } catch {
       // silent
     } finally {
@@ -253,11 +255,11 @@ export default function DashboardPage() {
     <>
       <VoiceModal open={voiceOpen} onClose={() => setVoiceOpen(false)} />
 
-      <div className="space-y-5 max-w-7xl mx-auto w-full pb-10">
+      <div className="space-y-5 max-w-7xl mx-auto w-full pb-10 stagger-children">
 
         {/* ── Campus Alert Ticker ───────────────────────────────────────── */}
         {!alertDismissed && (
-          <div className="w-full bg-accent/40 rounded-xl p-3 px-4 flex items-center justify-between shadow-sm hover:bg-accent/60 transition-colors">
+          <div className="w-full bg-accent/40 rounded-xl p-3 px-4 flex items-center justify-between shadow-sm hover:bg-accent/60 transition-all duration-400 hover:shadow-md anim-fade-in-down">
             <div className="flex items-center gap-3 min-w-0">
               <span className="flex h-2.5 w-2.5 rounded-full bg-primary animate-pulse shrink-0" />
               <div className="flex items-center gap-2 truncate">
@@ -275,10 +277,10 @@ export default function DashboardPage() {
         )}
 
         {/* ── Welcome Header ────────────────────────────────────────────── */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-card p-6 rounded-xl shadow-sm border">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-card p-6 rounded-2xl shadow-sm border hover:shadow-lg transition-all duration-500 hover:border-primary/15">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">Welcome back, {firstName}</h1>
+              <h1 className="text-3xl font-extrabold tracking-tight text-foreground">Welcome back, <span className="bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.55_0.08_130)] bg-clip-text text-transparent">{firstName}</span></h1>
               <span className="text-2xl animate-bounce inline-block origin-bottom-right">👋</span>
             </div>
             <div className="flex flex-wrap items-center gap-2 pt-1">
@@ -302,7 +304,7 @@ export default function DashboardPage() {
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => setVoiceOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-muted hover:bg-accent text-foreground rounded-lg transition-colors text-sm font-medium shadow-sm"
+              className="flex items-center gap-2 px-4 py-2.5 bg-muted hover:bg-accent text-foreground rounded-xl transition-all duration-400 text-sm font-medium shadow-sm hover:shadow-md hover:scale-105 hover:-translate-y-0.5"
             >
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-40" />
@@ -312,14 +314,14 @@ export default function DashboardPage() {
             </button>
             <Link
               href="/wall"
-              className="flex items-center gap-2 px-4 py-2.5 bg-muted hover:bg-accent text-foreground rounded-lg transition-colors text-sm font-medium"
+              className="flex items-center gap-2 px-4 py-2.5 bg-muted hover:bg-accent text-foreground rounded-xl transition-all duration-400 text-sm font-medium hover:shadow-md hover:scale-105 hover:-translate-y-0.5"
             >
               📢 The Wall
               <span className="px-1.5 py-0.5 rounded-full bg-primary text-primary-foreground text-xs font-bold">14</span>
             </Link>
             <Link
               href="/complaints/new"
-              className="flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg shadow-sm transition-all text-sm font-medium hover:opacity-90 active:scale-95"
+              className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.35_0.08_130)] text-white rounded-xl shadow-sm transition-all duration-400 text-sm font-semibold hover:shadow-lg hover:shadow-[oklch(0.42_0.10_130/0.25)] hover:scale-105 hover:-translate-y-0.5 active:scale-95"
             >
               ＋ File New Grievance
             </Link>
@@ -329,16 +331,16 @@ export default function DashboardPage() {
         {/* ── Stats Cards ───────────────────────────────────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Total */}
-          <div className="relative overflow-hidden bg-card border rounded-xl p-6 shadow-sm hover:shadow-md transition-all group">
+          <div className="relative overflow-hidden bg-card border rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-500 group hover:-translate-y-1 hover:border-primary/20 hover-gradient-border">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <span className="text-xs font-medium text-muted-foreground">Total Complaints Filed</span>
                 <div className="flex items-baseline gap-2 pt-2">
-                  <span className="text-5xl font-bold text-foreground tracking-tight">{loading ? "—" : total}</span>
+                  <span className="text-5xl font-extrabold bg-gradient-to-b from-foreground to-foreground/70 bg-clip-text text-transparent tracking-tight">{loading ? "—" : total}</span>
                   <span className="text-xs text-muted-foreground">all-time</span>
                 </div>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center group-hover:scale-115 group-hover:rotate-6 transition-all duration-500">
                 📋
               </div>
             </div>
@@ -351,7 +353,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Pending */}
-          <div className="relative overflow-hidden bg-card border rounded-xl p-6 shadow-sm hover:shadow-md transition-all group">
+          <div className="relative overflow-hidden bg-card border rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-500 group hover:-translate-y-1 hover:border-orange-300/30 hover-gradient-border">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <span className="text-xs font-medium text-muted-foreground">Pending Action</span>
@@ -360,7 +362,7 @@ export default function DashboardPage() {
                   <span className="text-xs text-muted-foreground">active tickets</span>
                 </div>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-100 to-orange-50 flex items-center justify-center group-hover:scale-115 group-hover:rotate-6 transition-all duration-500">
                 ⏳
               </div>
             </div>
@@ -374,7 +376,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Resolved */}
-          <div className="relative overflow-hidden bg-card border rounded-xl p-6 shadow-sm hover:shadow-md transition-all group">
+          <div className="relative overflow-hidden bg-card border rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-500 group hover:-translate-y-1 hover:border-primary/20 hover-gradient-border">
             <div className="flex items-start justify-between">
               <div className="space-y-1">
                 <span className="text-xs font-medium text-muted-foreground">Resolved Issues</span>
@@ -383,7 +385,7 @@ export default function DashboardPage() {
                   <span className="text-xs text-muted-foreground">closed out</span>
                 </div>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center group-hover:scale-115 group-hover:rotate-6 transition-all duration-500">
                 ✅
               </div>
             </div>
@@ -403,7 +405,7 @@ export default function DashboardPage() {
           {/* Left: Complaint List (8 cols) */}
           <div className="lg:col-span-8 space-y-4">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card border p-4 rounded-xl shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-card border p-4 rounded-2xl shadow-sm hover:shadow-md transition-all duration-400">
               <div className="flex items-center gap-2">
                 <span className="text-xl">📋</span>
                 <span className="text-lg font-bold text-foreground">Recent Complaints</span>
@@ -437,7 +439,7 @@ export default function DashboardPage() {
                 const priorityBar = PRIORITY_BARS[complaint.priority] ?? "bg-muted";
                 const status = STATUS_LABELS[complaint.status] ?? { label: complaint.status, cls: "bg-muted text-muted-foreground" };
                 return (
-                  <div key={complaint.id} className="relative overflow-hidden bg-card border rounded-xl p-5 shadow-sm hover:shadow-md transition-all">
+                  <div key={complaint.id} className="relative overflow-hidden bg-card border rounded-2xl p-5 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-1 hover:border-primary/15 hover-gradient-border">
                     {/* Priority bar */}
                     <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${priorityBar} rounded-l-xl`} />
 
@@ -469,7 +471,7 @@ export default function DashboardPage() {
                         </div>
                         <Link
                           href={`/complaints/${complaint.id}`}
-                          className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity shadow-sm"
+                          className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-[oklch(0.42_0.10_130)] to-[oklch(0.35_0.08_130)] text-white text-xs font-semibold hover:shadow-lg hover:shadow-[oklch(0.42_0.10_130/0.2)] transition-all duration-400 hover:scale-105 shadow-sm"
                         >
                           View Timeline →
                         </Link>
@@ -495,7 +497,7 @@ export default function DashboardPage() {
           <div className="lg:col-span-4 space-y-4">
 
             {/* Hostel Live Health */}
-            <div className="bg-card border rounded-xl p-5 shadow-sm space-y-4">
+            <div className="bg-card border rounded-2xl p-5 shadow-sm space-y-4 hover:shadow-lg transition-all duration-500 hover:border-primary/15">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span>💚</span>
@@ -537,7 +539,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Campus Facility Photo */}
-            <div className="bg-card border rounded-xl p-4 shadow-sm space-y-3">
+            <div className="bg-card border rounded-2xl p-4 shadow-sm space-y-3 hover:shadow-lg transition-all duration-500 hover:border-accent/25 group">
               <div className="relative w-full h-36 rounded-lg overflow-hidden bg-muted">
                 <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-primary/60 flex items-center justify-center">
                   <span className="text-5xl">🏫</span>
@@ -552,7 +554,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Emergency Contact */}
-            <div className="bg-destructive/5 border border-destructive/20 rounded-xl p-4 shadow-sm space-y-3">
+            <div className="bg-destructive/5 border border-destructive/20 rounded-2xl p-4 shadow-sm space-y-3 hover:shadow-lg transition-all duration-500 hover:bg-destructive/8 hover:border-destructive/30">
               <div className="flex items-center gap-2">
                 <span>🚨</span>
                 <h4 className="font-bold text-base text-foreground">Emergency Warden Support</h4>
